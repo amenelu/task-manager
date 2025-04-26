@@ -23,3 +23,16 @@ def tasks():
             for task in tasks
         ]
     )
+# create a new task
+@task_routes.route('/tasks',methods=['POST']):
+def create_task():
+    data=request.get_json()
+    task=Task(
+        title=data['title'],
+        description=data.get('description',""),
+        priority=data.get("priority","low"),
+        deadline=datetime.fromisoformat(data['deadline']) if 'deadline' in data else None
+    )
+    db.session.add(task)
+    db.session.commit()
+    return jsonify({"message":'Task created',"task_id":task.id}),201
