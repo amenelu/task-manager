@@ -40,3 +40,18 @@ def create_task():
     db.session.add(task)
     db.session.commit()
     return jsonify({"message": "Task created", "task_id": task.id}), 201
+
+
+# update a task
+@task_routes.route("/task/<int>:id", methods=["PUT"])
+def update_task(id):
+    data = request.get_json()
+    task = Task.query.get_or_404(id)
+    task.title = data.get("title", task.title)
+    task.description = data.get("description", task.description)
+    task.priority = data.get("priority", task.priority)
+    if "deadline" in data:
+        task.deadline = datetime.fromisoformat(data["deadline"])
+    task.completed = data.get("completed", task.completed)
+    db.session.commit()
+    return jsonify({"message": "Task updated!"})
